@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keep 泳装系列深度品牌定位报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --keep-blue: #2563eb; --bg-main: #fcfcfc; }
+        body { font-family: 'Inter', 'PingFang SC', sans-serif; background-color: var(--bg-main); color: #1a1a1a; scroll-behavior: smooth; }
+        .serif { font-family: 'Noto Serif SC', serif; }
+        .editable:hover { outline: 2px dashed var(--keep-blue); outline-offset: 4px; cursor: text; }
+        .editable:focus { outline: 2px solid var(--keep-blue); background: #fff; padding: 2px 4px; border-radius: 4px; }
+        .card { background: white; border: 1px solid #efefef; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card:hover { transform: translateY(-4px); border-color: #d1d1d1; box-shadow: 0 15px 35px rgba(0,0,0,0.03); }
+        .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        .data-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #94a3b8; }
+        #save-indicator { position: fixed; bottom: 24px; right: 24px; background: #000; color: #fff; font-size: 12px; padding: 10px 20px; border-radius: 99px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 100; }
+        .accent-border { border-left: 3px solid var(--keep-blue); padding-left: 1rem; }
+        
+        .strategy-table th { background: #f9fafb; font-size: 11px; text-transform: uppercase; color: #6b7280; padding: 12px; text-align: left; }
+        .strategy-table td { padding: 16px 12px; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+
+        /* 交互坐标轴样式 */
+        .chart-area { position: relative; width: 100%; height: 280px; background: #fafafa; border-radius: 12px; overflow: hidden; }
+        .axis-h { position: absolute; top: 50%; left: 10%; right: 10%; height: 1px; background: #e5e7eb; }
+        .axis-v { position: absolute; left: 50%; top: 10%; bottom: 10%; width: 1px; background: #e5e7eb; }
+        .axis-label { position: absolute; font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+        .movable-point { 
+            position: absolute; width: 14px; height: 14px; background: var(--keep-blue); 
+            border-radius: 50%; cursor: move; z-index: 20;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            transform: translate(-50%, -50%);
+        }
+        .movable-point::after { content: 'KEEP'; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 900; color: var(--keep-blue); }
+    </style>
+</head>
+<body class="antialiased opacity-0 transition-opacity duration-1000 opacity-100">
+
+    <div id="save-indicator">数据已自动同步</div>
+
+    <!-- 顶部导航 -->
+    <nav class="fixed top-0 w-full z-50 glass-nav border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <span class="text-xs uppercase tracking-[0.3em] font-black text-blue-600">Keep / Strategy</span>
+                <span class="h-4 w-[1px] bg-gray-200"></span>
+                <span class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Positioning Roadmap 2026</span>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="saveAndDownload()" class="text-[10px] bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition font-bold uppercase tracking-widest">永久下载并保存</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto pt-48 pb-32 px-8">
+        
+        <!-- 00. 封面与执行摘要 -->
+        <header class="mb-32">
+            <div class="inline-block bg-blue-50 text-blue-600 px-4 py-1 rounded-full mb-8">
+                <p id="meta-version" class="text-[10px] uppercase tracking-widest font-bold editable" contenteditable="true">Version 1.2 / Interactive Edition</p>
+            </div>
+            <h1 id="main-title" class="text-6xl md:text-7xl serif mb-12 leading-[1.1] editable" contenteditable="true">Keep 泳装系列<br>深度品牌定位</h1>
+            
+            <div class="grid md:grid-cols-12 gap-16">
+                <div class="md:col-span-7">
+                    <p id="exec-summary" class="text-xl text-gray-500 leading-relaxed editable" contenteditable="true">
+                        Keep 泳装定位于“运动表现驱动的生活方式品牌”。我们主张从“穿得舒适”升级到“穿出运动表现”，让每一次入水都是对自律生活的确认。
+                    </p>
+                </div>
+                <div class="md:col-span-5 flex flex-col justify-end text-sm text-gray-400 italic">
+                    * 下方的坐标点均可自由拖动以调整战略重点。
+                </div>
+            </div>
+        </header>
+
+        <!-- 05. 战略定位坐标图 (新增) -->
+        <section class="mb-48">
+            <h2 class="data-tag mb-16 text-center text-blue-600">Section 05 / Strategic Positioning Map</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                
+                <!-- 图 1: 市场定位 -->
+                <div class="card p-8 rounded-3xl">
+                    <h4 class="text-sm font-bold mb-6 editable" id="chart-1-t" contenteditable="true">01. 市场心智：功能表现 vs. 时尚美学</h4>
+                    <div class="chart-area" id="chart-container-1">
+                        <div class="axis-h"></div><div class="axis-v"></div>
+                        <span class="axis-label top-4 left-1/2 -translate-x-1/2 editable" id="c1-u" contenteditable="true">专业竞技</span>
+                        <span class="axis-label bottom-4 left-1/2 -translate-x-1/2 editable" id="c1-d" contenteditable="true">休闲娱乐</span>
+                        <span class="axis-label left-4 top-1/2 -translate-y-1/2 editable" id="c1-l" contenteditable="true">美学修饰</span>
+                        <span class="axis-label right-4 top-1/2 -translate-y-1/2 editable" id="c1-r" contenteditable="true">运动表现</span>
+                        <div class="movable-point" id="point-1" style="top: 30%; left: 75%;"></div>
+                    </div>
+                </div>
+
+                <!-- 图 2: 价格定位 -->
+                <div class="card p-8 rounded-3xl">
+                    <h4 class="text-sm font-bold mb-6 editable" id="chart-2-t" contenteditable="true">02. 价格矩阵：大众普及 vs. 溢价轻奢</h4>
+                    <div class="chart-area" id="chart-container-2">
+                        <div class="axis-h"></div><div class="axis-v"></div>
+                        <span class="axis-label top-4 left-1/2 -translate-x-1/2 editable" id="c2-u" contenteditable="true">高溢价</span>
+                        <span class="axis-label bottom-4 left-1/2 -translate-x-1/2 editable" id="c2-d" contenteditable="true">高性价比</span>
+                        <span class="axis-label left-4 top-1/2 -translate-y-1/2 editable" id="c2-l" contenteditable="true">基础款</span>
+                        <span class="axis-label right-4 top-1/2 -translate-y-1/2 editable" id="c2-r" contenteditable="true">设计引领</span>
+                        <div class="movable-point" id="point-2" style="top: 45%; left: 70%;"></div>
+                    </div>
+                </div>
+
+                <!-- 图 3: 风格定位 -->
+                <div class="card p-8 rounded-3xl">
+                    <h4 class="text-sm font-bold mb-6 editable" id="chart-3-t" contenteditable="true">03. 风格基调：硬朗极简 vs. 繁琐装饰</h4>
+                    <div class="chart-area" id="chart-container-3">
+                        <div class="axis-h"></div><div class="axis-v"></div>
+                        <span class="axis-label top-4 left-1/2 -translate-x-1/2 editable" id="c3-u" contenteditable="true">机能主义</span>
+                        <span class="axis-label bottom-4 left-1/2 -translate-x-1/2 editable" id="c3-d" contenteditable="true">经典保守</span>
+                        <span class="axis-label left-4 top-1/2 -translate-y-1/2 editable" id="c3-l" contenteditable="true">女性修饰</span>
+                        <span class="axis-label right-4 top-1/2 -translate-y-1/2 editable" id="c3-r" contenteditable="true">硬朗极简</span>
+                        <div class="movable-point" id="point-3" style="top: 25%; left: 80%;"></div>
+                    </div>
+                </div>
+
+                <!-- 图 4: 人群定位 -->
+                <div class="card p-8 rounded-3xl">
+                    <h4 class="text-sm font-bold mb-6 editable" id="chart-4-t" contenteditable="true">04. 用户画像：高频自律 vs. 低频随性</h4>
+                    <div class="chart-area" id="chart-container-4">
+                        <div class="axis-h"></div><div class="axis-v"></div>
+                        <span class="axis-label top-4 left-1/2 -translate-x-1/2 editable" id="c4-u" contenteditable="true">高频自律</span>
+                        <span class="axis-label bottom-4 left-1/2 -translate-x-1/2 editable" id="c4-d" contenteditable="true">低频随机</span>
+                        <span class="axis-label left-4 top-1/2 -translate-y-1/2 editable" id="c4-l" contenteditable="true">大众潮流</span>
+                        <span class="axis-label right-4 top-1/2 -translate-y-1/2 editable" id="c4-r" contenteditable="true">核心垂类</span>
+                        <div class="movable-point" id="point-4" style="top: 20%; left: 85%;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 01. 用户心理映射 -->
+        <section class="mb-48">
+            <h2 class="data-tag mb-12 text-center">Section 01 / User Psychology</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-10 rounded-[2rem] border-blue-100">
+                    <p class="text-blue-600 font-bold mb-4">18-24岁 / 自我认证</p>
+                    <h3 id="u1-title" class="text-2xl serif mb-6 editable" contenteditable="true">“我是一个坚持运动的人”</h3>
+                    <div class="space-y-6 text-sm text-gray-500">
+                        <p id="u1-desc" class="editable" contenteditable="true"><strong>心理驱动：</strong> 追求高效、自律的人设。她们不是为了显瘦而买，而是为了展示运动成果。为“社交价值”付费。</p>
+                        <div class="bg-blue-50 p-4 rounded-xl text-blue-800">
+                            <strong>典型决策：</strong> Keep 30天打卡成功 → 小红书搜索“健身博主泳装” → 追求“精致的自律感”。
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-10 rounded-[2rem]">
+                    <p class="text-gray-400 font-bold mb-4">25-29岁 / 生活品质</p>
+                    <h3 id="u2-title" class="text-2xl serif mb-6 editable" contenteditable="true">“从展示到真正的享受”</h3>
+                    <div class="space-y-6 text-sm text-gray-500">
+                        <p id="u2-desc" class="editable" contenteditable="true"><strong>心理驱动：</strong> 已完成自我证明，开始在乎质感、耐用性与实际运动表现。为“体验与品质”付费。</p>
+                        <div class="bg-gray-100 p-4 rounded-xl text-gray-800">
+                            <strong>典型决策：</strong> 旧泳衣变形/不适 → 搜索“专业高质量泳衣” → 对标 Nike/迪卡侬高端线。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 02. 竞品深度对标 -->
+        <section class="mb-48">
+            <h2 class="data-tag mb-12 text-center">Section 02 / Competitive Landscape</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full strategy-table card rounded-3xl">
+                    <thead>
+                        <tr>
+                            <th>维度 Dimension</th>
+                            <th>Pulassi (名媛风)</th>
+                            <th>迪卡侬 (大众功能)</th>
+                            <th>Keep (我们的机会)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-bold">设计风格</td>
+                            <td id="comp-1-1" class="editable" contenteditable="true">快时尚风格</td>
+                            <td id="comp-1-2" class="editable" contenteditable="true">简洁但老气、廉价感</td>
+                            <td id="comp-1-3" class="editable text-blue-600 font-bold" contenteditable="true">简洁硬朗、高设计感</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">面料质感</td>
+                            <td id="comp-2-1" class="editable" contenteditable="true">丝滑但易褪色</td>
+                            <td id="comp-2-2" class="editable" contenteditable="true">耐穿但手感粗糙</td>
+                            <td id="comp-2-3" class="editable text-blue-600 font-bold" contenteditable="true">耐穿+柔软的科学平衡</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">价格带</td>
+                            <td id="comp-3-1" class="editable" contenteditable="true">120 - 280元</td>
+                            <td id="comp-3-2" class="editable" contenteditable="true">49 - 120元</td>
+                            <td id="comp-3-3" class="editable text-blue-600 font-bold" contenteditable="true">150 - 160元</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-12 bg-red-50 p-8 rounded-3xl">
+                <h4 class="text-red-800 font-bold mb-4 uppercase text-xs tracking-widest">⚠️ 避坑指南 / Avoid the Trap</h4>
+                <p id="trap-desc" class="text-sm text-red-700 leading-relaxed editable" contenteditable="true">避免继续走低端大众化路线。Keep 通过剪裁和人体工学来体现“真实的专业感”，同时用结构和色彩来提升时尚感。</p>
+            </div>
+        </section>
+
+        <!-- 03. 运动表现的四个维度 -->
+        <section class="mb-48">
+            <h2 class="data-tag mb-16 text-center">Section 03 / Performance DNA</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="space-y-4">
+                    <div class="text-3xl serif italic text-blue-600">01</div>
+                    <h4 class="font-bold uppercase text-xs">无位移感</h4>
+                    <p id="perf-1" class="text-xs text-gray-400 editable" contenteditable="true">Zero Shift: 确保泳装在身体大幅度摆动时不产生位移。</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="text-3xl serif italic text-blue-600">02</div>
+                    <h4 class="font-bold uppercase text-xs">自由活动</h4>
+                    <p id="perf-2" class="text-xs text-gray-400 editable" contenteditable="true">Full Motion: 极高弹面料确保划手无束缚。</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="text-3xl serif italic text-blue-600">03</div>
+                    <h4 class="font-bold uppercase text-xs">快速干爽</h4>
+                    <p id="perf-3" class="text-xs text-gray-400 editable" contenteditable="true">Quick Dry: LYCRA 级回弹与高效排水。</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="text-3xl serif italic text-blue-600">04</div>
+                    <h4 class="font-bold uppercase text-xs">极致耐穿</h4>
+                    <p id="perf-4" class="text-xs text-gray-400 editable" contenteditable="true">Durability: 200小时+ 抗氯耐磨测试。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 04. 货盘矩阵 -->
+        <section class="mb-48 border-t border-gray-100 pt-32">
+            <h2 class="data-tag mb-16 text-center">Section 04 / Product Matrix</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card p-8 rounded-3xl">
+                    <h4 class="text-sm font-bold mb-8">女士连体线</h4>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between items-baseline"><span class="text-2xl serif">￥159</span><span class="text-[10px] text-gray-400">零售价</span></div>
+                        <div class="w-full bg-blue-100 h-1 rounded-full"><div class="bg-blue-600 h-1 w-[60%]"></div></div>
+                    </div>
+                    <ul id="p-w-list" class="text-[11px] space-y-3 text-gray-500 editable" contenteditable="true">
+                        <li>• 首发: 基础款 (50%)</li>
+                        <li>• 设计: 露背、细肩带</li>
+                        <li>• 目标: 轻奢极简运动风格</li>
+                    </ul>
+                </div>
+                <div class="card p-8 rounded-3xl">
+                    <h4 class="text-sm font-bold mb-8">男士泳裤线</h4>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between items-baseline"><span class="text-2xl serif">￥99</span><span class="text-[10px] text-gray-400">零售价</span></div>
+                        <div class="w-full bg-gray-200 h-1 rounded-full"><div class="bg-gray-800 h-1 w-[58%]"></div></div>
+                    </div>
+                    <ul id="p-m-list" class="text-[11px] space-y-3 text-gray-500 editable" contenteditable="true">
+                        <li>• 风格: 现代贴身裁剪</li>
+                        <li>• 特征: 重设计、轻运动</li>
+                        <li>• 目标: 替代老气传统款式</li>
+                    </ul>
+                </div>
+                <div class="card p-8 rounded-3xl">
+                    <h4 class="text-sm font-bold mb-8">儿童系列</h4>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between items-baseline"><span class="text-2xl serif">￥99</span><span class="text-[10px] text-gray-400">零售价</span></div>
+                        <div class="w-full bg-green-100 h-1 rounded-full"><div class="bg-green-600 h-1 w-[55%]"></div></div>
+                    </div>
+                    <ul id="p-k-list" class="text-[11px] space-y-3 text-gray-500 editable" contenteditable="true">
+                        <li>• 特征: 安全、可爱、舒适</li>
+                        <li>• 触发点: 家庭消费关联</li>
+                        <li>• 目标: 品牌忠诚度延续</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 06. 执行清单 -->
+        <section class="mb-24 bg-black text-white p-16 rounded-[4rem]">
+            <h2 class="text-3xl serif mb-12">执行清单 / Execution Checklist</h2>
+            <div class="grid md:grid-cols-2 gap-16">
+                <ul class="space-y-6">
+                    <li class="flex items-center gap-4 border-b border-gray-800 pb-4">
+                        <input type="checkbox" checked class="accent-blue-500">
+                        <span id="check-1" class="editable text-sm" contenteditable="true">完成三线产品设计稿 (女士、男士、儿童)</span>
+                    </li>
+                    <li class="flex items-center gap-4 border-b border-gray-800 pb-4">
+                        <input type="checkbox" class="accent-blue-500">
+                        <span id="check-2" class="editable text-sm" contenteditable="true">确定核心面料供应商</span>
+                    </li>
+                </ul>
+                <ul class="space-y-6">
+                    <li class="flex items-center gap-4 border-b border-gray-800 pb-4">
+                        <input type="checkbox" class="accent-blue-500">
+                        <span id="check-3" class="editable text-sm" contenteditable="true">启动 100 名核心用户试穿招募</span>
+                    </li>
+                    <li class="flex items-center gap-4 border-b border-gray-800 pb-4">
+                        <input type="checkbox" class="accent-blue-500">
+                        <span id="check-4" class="editable text-sm" contenteditable="true">建立 30天 售后支持体系</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-6xl mx-auto px-8 py-16 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8 text-gray-400 text-[10px] tracking-widest uppercase font-bold">
+        <div class="flex items-center gap-4">
+            <span>Confidential Strategic Report / Interactive Edition</span>
+        </div>
+        <div class="flex gap-8">
+            <a href="#" class="hover:text-blue-600 transition">Strategy</a>
+            <a href="#" class="hover:text-blue-600 transition">Market Data</a>
+        </div>
+    </footer>
+
+    <script>
+        // 初始化：加载暂存数据（包含坐标）
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedData = JSON.parse(localStorage.getItem('keep_report_interactive_save') || '{}');
+            Object.keys(savedData).forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                
+                // 如果是坐标点，还原其 style
+                if (el.classList.contains('movable-point')) {
+                    el.style.top = savedData[id].top;
+                    el.style.left = savedData[id].left;
+                } else {
+                    el.innerHTML = savedData[id];
+                }
+            });
+            document.body.classList.add('opacity-100');
+            initDraggablePoints();
+        });
+
+        // 核心：实时同步逻辑
+        const saveIndicator = document.getElementById('save-indicator');
+        function syncData() {
+            const data = {};
+            // 保存所有可编辑内容
+            document.querySelectorAll('.editable').forEach(el => {
+                data[el.id] = el.innerHTML;
+            });
+            // 保存所有坐标点位置
+            document.querySelectorAll('.movable-point').forEach(el => {
+                data[el.id] = { top: el.style.top, left: el.style.left };
+            });
+            localStorage.setItem('keep_report_interactive_save', JSON.stringify(data));
+            
+            saveIndicator.style.opacity = '1';
+            setTimeout(() => { saveIndicator.style.opacity = '0'; }, 1000);
+        }
+
+        document.querySelectorAll('.editable').forEach(el => {
+            el.addEventListener('input', syncData);
+        });
+
+        // 拖拽功能实现
+        function initDraggablePoints() {
+            document.querySelectorAll('.movable-point').forEach(point => {
+                let isDragging = false;
+                const container = point.parentElement;
+
+                const startDrag = (e) => {
+                    isDragging = true;
+                    e.preventDefault();
+                };
+
+                const onDrag = (e) => {
+                    if (!isDragging) return;
+                    const rect = container.getBoundingClientRect();
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    let x = ((clientX - rect.left) / rect.width) * 100;
+                    let y = ((clientY - rect.top) / rect.height) * 100;
+
+                    // 限制范围在 10% 到 90% 之间，防止跑出坐标轴
+                    x = Math.max(10, Math.min(90, x));
+                    y = Math.max(10, Math.min(90, y));
+
+                    point.style.left = `${x}%`;
+                    point.style.top = `${y}%`;
+                };
+
+                const stopDrag = () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        syncData(); // 拖拽结束时保存
+                    }
+                };
+
+                point.addEventListener('mousedown', startDrag);
+                point.addEventListener('touchstart', startDrag);
+                window.addEventListener('mousemove', onDrag);
+                window.addEventListener('touchmove', onDrag);
+                window.addEventListener('mouseup', stopDrag);
+                window.addEventListener('touchend', stopDrag);
+            });
+        }
+
+        // 导出功能
+        function saveAndDownload() {
+            // 将暂存内容固化到源码标签属性中（用于下次加载）
+            document.querySelectorAll('.editable').forEach(el => {
+                el.setAttribute('data-current-val', el.innerHTML);
+            });
+            // 坐标点位置已经通过 style 属性内联在标签里了，直接 clone 即可保持
+
+            const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Keep泳装深度品牌定位报告_交互坐标版.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
